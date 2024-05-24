@@ -1,0 +1,435 @@
+0: i0 = ( int ) 3.14
+1: i1 = 9 * 11
+2: i2 = i0 + i1
+3: var_i = i2
+4: i3 = var_i
+5: var_j = int 50.123
+6: i4 = var_j
+7: var_cnt = 0
+8: i5 = var_cnt
+9: f0 = ( float ) 1
+10: l0 = ( long ) 0.9
+11: d1 = float f0
+12: d2 = double l0
+13: d0 = d1 + d2
+14: var_f = float d0
+15: f1 = var_f
+16: var_k = 10
+17: i6 = var_k
+18: i7 = 1 * 20
+19: i8 = 2 * 4
+20: i9 = i9 + i8
+21: i10 = 2 * 20
+22: i11 = 1 * 4
+23: i12 = i12 + i11
+24: i13 = var_arr [ i12 ]
+25: i14 = i13 + 10
+26: var_arr [ i9 ] = i14
+27: i15 = var_arr [ i9 ]
+28: i16 = 1 * 4
+29: var_i [ i16 ] = 10
+30: i17 = var_i [ i16 ]
+31: if var_j < 100 goto 33
+32: goto 42
+33: if var_i < 100 goto 35
+34: goto 42
+35: if var_i > var_j goto 37
+36: goto 40
+37: var_i = 100
+38: i18 = var_i
+39: goto 42
+40: var_j = 100
+41: i19 = var_j
+42: if var_j < 100 goto 44
+43: goto 48
+44: i20 = var_j + 1
+45: var_j = i20
+46: i21 = var_j
+47: goto 42
+48: i22 = var_j + 1
+49: var_j = i22
+50: i23 = var_j
+51: if var_j < 100 goto 48
+52: goto 54
+53: goto 48
+54: var_j = 0
+55: i24 = var_j
+56: if var_j < 100 goto 62
+57: goto 66
+58: i25 = var_j + 1
+59: var_j = i25
+60: i26 = var_j
+61: goto 56
+62: i27 = var_cnt + 1
+63: var_cnt = i27
+64: i28 = var_cnt
+65: goto 58
+66: var_j = 0
+67: i29 = var_j
+68: if var_j < 100 goto 74
+69: goto 84
+70: i30 = var_j + 1
+71: var_j = i30
+72: i31 = var_j
+73: goto 68
+74: if var_j == 50 goto 76
+75: goto 77
+76: goto 84
+77: if var_j == 25 goto 79
+78: goto 80
+79: goto 70
+80: i32 = var_cnt + 1
+81: var_cnt = i32
+82: i33 = var_cnt
+83: goto 70
+84: goto_____
+85: goto_____
+86: return
+0: i0 = ( int ) 3.14
+1: i1 = 9 * 11
+2: i2 = i0 + i1
+3: var_i = i2
+4: i3 = var_i
+5: var_j = int 50.123
+6: i4 = var_j
+7: var_cnt = 0
+8: i5 = var_cnt
+9: f0 = ( float ) 1
+10: l0 = ( long ) 0.9
+11: d1 = float f0
+12: d2 = double l0
+13: d0 = d1 + d2
+14: var_f = float d0
+15: f1 = var_f
+16: var_k = 10
+17: i6 = var_k
+18: i7 = 1 * 20
+19: i8 = 2 * 4
+20: i9 = i9 + i8
+21: i10 = 2 * 20
+22: i11 = 1 * 4
+23: i12 = i12 + i11
+24: i13 = var_arr [ i12 ]
+25: i14 = i13 + 10
+26: var_arr [ i9 ] = i14
+27: i15 = var_arr [ i9 ]
+28: i16 = 1 * 4
+29: var_i [ i16 ] = 10
+30: i17 = var_i [ i16 ]
+31: if var_j < 100 goto 33
+32: goto 42
+33: if var_i < 100 goto 35
+34: goto 42
+35: if var_i > var_j goto 37
+36: goto 40
+37: var_i = 100
+38: i18 = var_i
+39: goto 42
+40: var_j = 100
+41: i19 = var_j
+42: if var_j < 100 goto 44
+43: goto 48
+44: i20 = var_j + 1
+45: var_j = i20
+46: i21 = var_j
+47: goto 42
+48: i22 = var_j + 1
+49: var_j = i22
+50: i23 = var_j
+51: if var_j < 100 goto 48
+52: goto 54
+53: goto 48
+54: var_j = 0
+55: i24 = var_j
+56: if var_j < 100 goto 62
+57: goto 66
+58: i25 = var_j + 1
+59: var_j = i25
+60: i26 = var_j
+61: goto 56
+62: i27 = var_cnt + 1
+63: var_cnt = i27
+64: i28 = var_cnt
+65: goto 58
+66: var_j = 0
+67: i29 = var_j
+68: if var_j < 100 goto 74
+69: goto 84
+70: i30 = var_j + 1
+71: var_j = i30
+72: i31 = var_j
+73: goto 68
+74: if var_j == 50 goto 76
+75: goto 77
+76: goto 84
+77: if var_j == 25 goto 79
+78: goto 80
+79: goto 70
+80: i32 = var_cnt + 1
+81: var_cnt = i32
+82: i33 = var_cnt
+83: goto 70
+84: goto_____
+85: goto_____
+86: return
+0: i0 = ( int ) 3.14
+1: i1 = 9 * 11
+2: i2 = i0 + i1
+3: var_i = i2
+4: i3 = var_i
+5: var_j = int 50.123
+6: i4 = var_j
+7: var_cnt = 0
+8: i5 = var_cnt
+9: f0 = ( float ) 1
+10: l0 = ( long ) 0.9
+11: d1 = float f0
+12: d2 = double l0
+13: d0 = d1 + d2
+14: var_f = float d0
+15: f1 = var_f
+16: var_k = 10
+17: i6 = var_k
+18: i7 = 1 * 20
+19: i8 = 2 * 4
+20: i9 = i9 + i8
+21: i10 = 2 * 20
+22: i11 = 1 * 4
+23: i12 = i12 + i11
+24: i13 = var_arr [ i12 ]
+25: i14 = i13 + 10
+26: var_arr [ i9 ] = i14
+27: i15 = var_arr [ i9 ]
+28: i16 = 1 * 4
+29: var_i [ i16 ] = 10
+30: i17 = var_i [ i16 ]
+31: if var_j < 100 goto 33
+32: goto 42
+33: if var_i < 100 goto 35
+34: goto 42
+35: if var_i > var_j goto 37
+36: goto 40
+37: var_i = 100
+38: i18 = var_i
+39: goto 42
+40: var_j = 100
+41: i19 = var_j
+42: if var_j < 100 goto 44
+43: goto 48
+44: i20 = var_j + 1
+45: var_j = i20
+46: i21 = var_j
+47: goto 42
+48: i22 = var_j + 1
+49: var_j = i22
+50: i23 = var_j
+51: if var_j < 100 goto 48
+52: goto 54
+53: goto 48
+54: var_j = 0
+55: i24 = var_j
+56: if var_j < 100 goto 62
+57: goto 66
+58: i25 = var_j + 1
+59: var_j = i25
+60: i26 = var_j
+61: goto 56
+62: i27 = var_cnt + 1
+63: var_cnt = i27
+64: i28 = var_cnt
+65: goto 58
+66: var_j = 0
+67: i29 = var_j
+68: if var_j < 100 goto 74
+69: goto 84
+70: i30 = var_j + 1
+71: var_j = i30
+72: i31 = var_j
+73: goto 68
+74: if var_j == 50 goto 76
+75: goto 77
+76: goto 84
+77: if var_j == 25 goto 79
+78: goto 80
+79: goto 70
+80: i32 = var_cnt + 1
+81: var_cnt = i32
+82: i33 = var_cnt
+83: goto 70
+84: goto_____
+85: goto_____
+86: return
+0: i0 = ( int ) 3.14
+1: i1 = 9 * 11
+2: i2 = i0 + i1
+3: var_i = i2
+4: i3 = var_i
+5: var_j = int 50.123
+6: i4 = var_j
+7: var_cnt = 0
+8: i5 = var_cnt
+9: f0 = ( float ) 1
+10: l0 = ( long ) 0.9
+11: d1 = float f0
+12: d2 = double l0
+13: d0 = d1 + d2
+14: var_f = float d0
+15: f1 = var_f
+16: var_k = 10
+17: i6 = var_k
+18: i7 = 1 * 20
+19: i8 = 2 * 4
+20: i9 = i9 + i8
+21: i10 = 2 * 20
+22: i11 = 1 * 4
+23: i12 = i12 + i11
+24: i13 = var_arr [ i12 ]
+25: i14 = i13 + 10
+26: var_arr [ i9 ] = i14
+27: i15 = var_arr [ i9 ]
+28: i16 = 1 * 4
+29: var_i [ i16 ] = 10
+30: i17 = var_i [ i16 ]
+31: if var_j < 100 goto 33
+32: goto 42
+33: if var_i < 100 goto 35
+34: goto 42
+35: if var_i > var_j goto 37
+36: goto 40
+37: var_i = 100
+38: i18 = var_i
+39: goto 42
+40: var_j = 100
+41: i19 = var_j
+42: if var_j < 100 goto 44
+43: goto 48
+44: i20 = var_j + 1
+45: var_j = i20
+46: i21 = var_j
+47: goto 42
+48: i22 = var_j + 1
+49: var_j = i22
+50: i23 = var_j
+51: if var_j < 100 goto 48
+52: goto 54
+53: goto 48
+54: var_j = 0
+55: i24 = var_j
+56: if var_j < 100 goto 62
+57: goto 66
+58: i25 = var_j + 1
+59: var_j = i25
+60: i26 = var_j
+61: goto 56
+62: i27 = var_cnt + 1
+63: var_cnt = i27
+64: i28 = var_cnt
+65: goto 58
+66: var_j = 0
+67: i29 = var_j
+68: if var_j < 100 goto 74
+69: goto 84
+70: i30 = var_j + 1
+71: var_j = i30
+72: i31 = var_j
+73: goto 68
+74: if var_j == 50 goto 76
+75: goto 77
+76: goto 84
+77: if var_j == 25 goto 79
+78: goto 80
+79: goto 70
+80: i32 = var_cnt + 1
+81: var_cnt = i32
+82: i33 = var_cnt
+83: goto 70
+84: goto_____
+85: goto_____
+86: return
+0: i0 = ( int ) 3.14
+1: i1 = 9 * 11
+2: i2 = i0 + i1
+3: var_i = i2
+4: i3 = var_i
+5: var_j = int 50.123
+6: i4 = var_j
+7: var_cnt = 0
+8: i5 = var_cnt
+9: f0 = ( float ) 1
+10: l0 = ( long ) 0.9
+11: d1 = float f0
+12: d2 = double l0
+13: d0 = d1 + d2
+14: var_f = float d0
+15: f1 = var_f
+16: var_k = 10
+17: i6 = var_k
+18: i7 = 1 * 20
+19: i8 = 2 * 4
+20: i9 = i9 + i8
+21: i10 = 2 * 20
+22: i11 = 1 * 4
+23: i12 = i12 + i11
+24: i13 = var_arr [ i12 ]
+25: i14 = i13 + 10
+26: var_arr [ i9 ] = i14
+27: i15 = var_arr [ i9 ]
+28: i16 = 1 * 4
+29: var_i [ i16 ] = 10
+30: i17 = var_i [ i16 ]
+31: if var_j < 100 goto 33
+32: goto 42
+33: if var_i < 100 goto 35
+34: goto 42
+35: if var_i > var_j goto 37
+36: goto 40
+37: var_i = 100
+38: i18 = var_i
+39: goto 42
+40: var_j = 100
+41: i19 = var_j
+42: if var_j < 100 goto 44
+43: goto 48
+44: i20 = var_j + 1
+45: var_j = i20
+46: i21 = var_j
+47: goto 42
+48: i22 = var_j + 1
+49: var_j = i22
+50: i23 = var_j
+51: if var_j < 100 goto 48
+52: goto 54
+53: goto 48
+54: var_j = 0
+55: i24 = var_j
+56: if var_j < 100 goto 62
+57: goto 66
+58: i25 = var_j + 1
+59: var_j = i25
+60: i26 = var_j
+61: goto 56
+62: i27 = var_cnt + 1
+63: var_cnt = i27
+64: i28 = var_cnt
+65: goto 58
+66: var_j = 0
+67: i29 = var_j
+68: if var_j < 100 goto 74
+69: goto 84
+70: i30 = var_j + 1
+71: var_j = i30
+72: i31 = var_j
+73: goto 68
+74: if var_j == 50 goto 76
+75: goto 77
+76: goto 84
+77: if var_j == 25 goto 79
+78: goto 80
+79: goto 70
+80: i32 = var_cnt + 1
+81: var_cnt = i32
+82: i33 = var_cnt
+83: goto 70
+84: goto_____
+85: goto_____
+86: return

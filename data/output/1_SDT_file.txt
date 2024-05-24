@@ -1,0 +1,365 @@
+S' -> Program
+
+Program -> Basic id ( ) Block
+    {backpatch(Block.nextlist, nextinstr)
+    if Block.breaklist: error('break statement not in loop')
+    if Block.continuelist: error('continue statement not in loop')
+    gen('return')}
+
+Block -> { Decls Stmts }
+    {Block.nextlist = Stmts.nextlist
+    Block.breaklist = Stmts.breaklist
+    Block.continuelist = Stmts.continuelist}
+
+Decls -> Decls1 Decl
+
+Decls -> ε
+
+Decl -> Type id ;
+    {top.put(id.lexeme, Type.type)}
+
+Type -> Type1 [ num ]
+    {Type.type = array(num.lexval, Type1.type)
+    Type.width = num.lexval * Type1.width}
+
+Type -> Basic
+    {Type.type = Basic.type
+    Type.width = Basic.width}
+
+Basic -> float
+    {Basic.type = float
+    Basic.width = 8}
+
+Basic -> int
+    {Basic.type = int
+    Basic.width = 4}
+
+Basic -> long
+    {Basic.type = long
+    Basic.width = 8}
+
+Basic -> double
+    {Basic.type = double
+    Basic.width = 16}
+
+Stmts -> Stmts1 M Stmt
+    {backpatch(Stmts1.nextlist, M.instr)
+    Stmts.nextlist = Stmt.nextlist
+    Stmts.breaklist = merge(Stmts1.breaklist, Stmt.breaklist)
+    Stmts.continuelist = merge(Stmts1.continuelist, Stmt.continuelist)}
+
+Stmts -> ε
+    {Stmts.nextlist = []
+    Stmts.breaklist = []
+    Stmts.continuelist = []}
+
+Stmt -> Stmt_Open
+    {Stmt.nextlist = Stmt_Open.nextlist
+    Stmt.breaklist = Stmt_Open.breaklist
+    Stmt.continuelist = Stmt_Open.continuelist}
+
+Stmt -> Stmt_Closed
+    {Stmt.nextlist = Stmt_Closed.nextlist
+    Stmt.breaklist = Stmt_Closed.breaklist
+    Stmt.continuelist = Stmt_Closed.continuelist}
+
+Stmt_Open -> if ( Bool ) M Stmt1
+    {backpatch(Bool.truelist, M.instr)
+    Stmt_Open.nextlist = merge(Bool.falselist, Stmt1.nextlist)
+    Stmt_Open.breaklist = Stmt1.breaklist
+    Stmt_Open.continuelist = Stmt1.continuelist}
+
+Stmt_Open -> if ( Bool ) M1 Stmt_Closed1 N else M2 Stmt_Open2
+    {backpatch(Bool.truelist, M1.instr)
+    backpatch(Bool.falselist, M2.instr)
+    temp = merge(Stmt_Closed1.nextlist, N.nextlist)
+    Stmt_Open.nextlist = merge(temp, Stmt_Open2.nextlist)
+    Stmt_Open.breaklist = merge(Stmt_Closed1.breaklist, Stmt_Open2.breaklist)
+    Stmt_Open.continuelist = merge(Stmt_Closed1.continuelist, Stmt_Open2.continuelist)}
+
+Stmt_Open -> while M1 ( Bool ) M2 Stmt_Open1
+    {backpatch(Stmt_Open1.nextlist, M1.instr)
+    backpatch(Bool.truelist, M2.instr)
+    backpatch(Stmt_Open1.continuelist, M1.instr)
+    Stmt_Open.nextlist = merge(Bool.falselist, Stmt_Open1.breaklist)
+    Stmt_Open.breaklist = []
+    Stmt_Open.continuelist = []
+    gen('goto', M1.instr)}
+
+Stmt_Open -> for ( Expr1 ; M1 Bool ; M2 Expr2 N ) M3 Stmt_Open3
+    {backpatch(Bool.truelist, M3.instr)
+    backpatch(N.nextlist, M1.instr)
+    backpatch(Stmt_Open3.nextlist, M2.instr)
+    backpatch(Stmt_Open3.continuelist, M2.instr)
+    gen('goto', M2.instr)
+    Stmt_Open.nextlist = merge(Bool.falselist, Stmt_Open3.breaklist)
+    Stmt_Open.breaklist = []
+    Stmt_Open.continuelist = []}
+
+Stmt_Closed -> if ( Bool ) M1 Stmt_Closed1 N else M2 Stmt_Closed2
+    {backpatch(Bool.truelist, M1.instr)
+    backpatch(Bool.falselist, M2.instr)
+    temp = merge(Stmt_Closed1.nextlist, N.nextlist)
+    Stmt_Closed.nextlist = merge(temp, Stmt_Closed2.nextlist)
+    Stmt_Closed.breaklist = merge(Stmt_Closed1.breaklist, Stmt_Closed2.breaklist)
+    Stmt_Closed.continuelist = merge(Stmt_Closed1.continuelist, Stmt_Closed2.continuelist)}
+
+Stmt_Closed -> while M1 ( Bool ) M2 Stmt_Closed1
+    {backpatch(Stmt_Closed1.nextlist, M1.instr)
+    backpatch(Bool.truelist, M2.instr)
+    backpatch(Stmt_Closed1.continuelist, M1.instr)
+    Stmt_Closed.nextlist = merge(Bool.falselist, Stmt_Closed1.breaklist)
+    Stmt_Closed.breaklist = []
+    Stmt_Closed.continuelist = []
+    gen('goto', M1.instr)}
+
+Stmt_Closed -> do M1 Stmt1 while M2 ( Bool ) ;
+    {backpatch(Bool.truelist, M1.instr)
+    backpatch(Stmt1.nextlist, M2.instr)
+    backpatch(Stmt1.continuelist, M1.instr)
+    Stmt_Closed.nextlist = merge(Bool.falselist, Stmt1.breaklist)
+    Stmt_Closed.breaklist = []
+    Stmt_Closed.continuelist = []
+    gen('goto', M1.instr)}
+
+Stmt_Closed -> for ( Expr1 ; M1 Bool ; M2 Expr2 N ) M3 Stmt_Closed3
+    {backpatch(Bool.truelist, M3.instr)
+    backpatch(N.nextlist, M1.instr)
+    backpatch(Stmt_Closed3.nextlist, M2.instr)
+    backpatch(Stmt_Closed3.continuelist, M2.instr)
+    gen('goto', M2.instr)
+    Stmt_Closed.nextlist = merge(Bool.falselist, Stmt_Closed3.breaklist)
+    Stmt_Closed.breaklist = []
+    Stmt_Closed.continuelist = []}
+
+Stmt_Closed -> break ;
+    {Stmt_Closed.nextlist = []
+    Stmt_Closed.breaklist = makelist(nextinstr)
+    Stmt_Closed.continuelist = []
+    gen('goto_____')}
+
+Stmt_Closed -> continue ;
+    {Stmt_Closed.nextlist = []
+    Stmt_Closed.breaklist = []
+    Stmt_Closed.continuelist = makelist(nextinstr)
+    gen('goto_____')}
+
+Stmt_Closed -> Expr ;
+    {Stmt_Closed.nextlist = []
+    Stmt_Closed.breaklist = []
+    Stmt_Closed.continuelist = []}
+
+Stmt_Closed -> Block
+    {Stmt_Closed.nextlist = Block.nextlist
+    Stmt_Closed.breaklist = Block.breaklist
+    Stmt_Closed.continuelist = Block.continuelist}
+
+M -> ε
+    {M.instr = nextinstr}
+
+N -> ε
+    {N.nextlist = makelist(nextinstr)
+    gen('goto_____')}
+
+Bool -> Bool1 || L Bool_Join2
+    {backpatch(Bool1.falselist, L.instr)
+    Bool.truelist = merge(Bool1.truelist, Bool_Join2.truelist)
+    Bool.falselist = Bool_Join2.falselist}
+
+Bool -> Bool_Join1
+    {Bool.truelist = Bool_Join1.truelist
+    Bool.falselist = Bool_Join1.falselist}
+
+Bool_Join -> Bool_Join1 && K Bool_Unary2
+    {backpatch(Bool_Join1.truelist, K.instr)
+    Bool_Join.truelist = Bool_Unary2.truelist
+    Bool_Join.falselist = merge(Bool_Join1.falselist, Bool_Unary2.falselist)}
+
+Bool_Join -> Bool_Unary1
+    {Bool_Join.truelist = Bool_Unary1.truelist
+    Bool_Join.falselist = Bool_Unary1.falselist}
+
+Bool_Unary -> Expr1 Rel Expr2
+    {Bool_Unary.truelist = makelist(nextinstr)
+    Bool_Unary.falselist = makelist(nextinstr+1)
+    gen('if', Expr1.addr, Rel.op, Expr2.addr, 'goto  ___')
+    gen('goto _____')}
+
+Bool_Unary -> true
+    {Bool_Unary.truelist = makelist(nextinstr)
+    Bool_Unary.falselist = []
+    gen('goto_____')}
+
+Bool_Unary -> false
+    {Bool_Unary.falselist = makelist(nextinstr)
+    Bool_Unary.truelist = []
+    gen('goto_____')}
+
+Bool_Unary -> ! Bool_Unary1
+    {Bool_Unary.truelist = Bool_Unary1.falselist
+    Bool_Unary.falselist = Bool_Unary1.truelist}
+
+Bool_Unary -> ( Bool )
+    {Bool_Unary.truelist = Bool.truelist
+    Bool_Unary.falselist = Bool.falselist}
+
+L -> ε
+    {L.instr = nextinstr}
+
+K -> ε
+    {K.instr = nextinstr}
+
+Rel -> <
+    {Rel.op='<'}
+
+Rel -> >
+    {Rel.op='>'}
+
+Rel -> ==
+    {Rel.op='=='}
+
+Rel -> !=
+    {Rel.op='!='}
+
+Rel -> <=
+    {Rel.op='<='}
+
+Rel -> >=
+    {Rel.op='>='}
+
+Expr -> Expr_Assign1
+    {Expr.addr = Expr_Assign1.addr
+    Expr.type = Expr_Assign1.type}
+
+Expr_Assign -> Loc = Expr1
+    {if Expr1.type != Loc.type:
+        gen(Loc.array_addr, '[', Loc.offset_addr, ']', '=', Loc.type, Expr1.addr)
+    else:
+        gen(Loc.array_addr, '[', Loc.offset_addr, ']', '=', Expr1.addr)
+    Expr_Assign.addr = newTemp(Loc.type)
+    Expr_Assign.type = Loc.type
+    gen(Expr_Assign.addr, '=', Loc.array_addr, '[', Loc.offset_addr, ']')}
+
+Expr_Assign -> id = Expr1
+    {if Expr1.type != top.get_type(id.lexeme):
+        gen(top.get_addr(id.lexeme), '=', top.get_type(id.lexeme), Expr1.addr)
+    else:
+        gen(top.get_addr(id.lexeme), '=', Expr1.addr)
+    Expr_Assign.addr = newTemp(top.get_type(id.lexeme))
+    Expr_Assign.type = top.get_type(id.lexeme)
+    gen(Expr_Assign.addr, '=', top.get_addr(id.lexeme))}
+
+Expr_Assign -> Expr_Arith1
+    {Expr_Assign.addr = Expr_Arith1.addr
+    Expr_Assign.type = Expr_Arith1.type}
+
+Expr_Arith -> Expr_Arith1 + Expr_Term2
+    {Expr_Arith.type = resultAccuracy(Expr_Arith1.type, Expr_Term2.type)
+    Expr_Arith.addr = newTemp(Expr_Arith.type)
+    operand1 = Expr_Arith1.addr
+    if Expr_Arith1.type != Expr_Arith.type:
+        operand1 = newTemp(Expr_Arith.type)
+        gen(operand1, '=', Expr_Arith1.type, Expr_Arith1.addr)
+    operand2 = Expr_Term2.addr
+    if Expr_Term2.type != Expr_Arith.type:
+        operand2 = newTemp(Expr_Arith.type)
+        gen(operand2, '=', Expr_Arith.type, Expr_Term2.addr)
+    gen(Expr_Arith.addr, '=', operand1, '+', operand2)}
+
+Expr_Arith -> Expr_Arith1 - Expr_Term2
+    {Expr_Arith.type = resultAccuracy(Expr_Arith1.type, Expr_Term2.type)
+    Expr_Arith.addr = newTemp(Expr_Arith.type)
+    operand1 = Expr_Arith1.addr
+    if Expr_Arith1.type != Expr_Arith.type:
+        operand1 = newTemp(Expr_Arith.type)
+        gen(operand1, '=', Expr_Arith1.type, Expr_Arith1.addr)
+    operand2 = Expr_Term2.addr
+    if Expr_Term2.type != Expr_Arith.type:
+        operand2 = newTemp(Expr_Arith.type)
+        gen(operand2, '=', Expr_Arith.type, Expr_Term2.addr)
+    gen(Expr_Arith.addr, '=', operand1, '-', operand2)}
+
+Expr_Arith -> Expr_Term1
+    {Expr_Arith.addr = Expr_Term1.addr
+    Expr_Arith.type = Expr_Term1.type}
+
+Expr_Term -> Expr_Term1 * Expr_Unary2
+    {Expr_Term.type = resultAccuracy(Expr_Term1.type, Expr_Unary2.type)
+    Expr_Term.addr = newTemp(Expr_Term.type)
+    operand1 = Expr_Term1.addr
+    if Expr_Term1.type != Expr_Term.type:
+        operand1 = newTemp(Expr_Term.type)
+        gen(operand1, '=', Expr_Term1.type, Expr_Term1.addr)
+    operand2 = Expr_Unary2.addr
+    if Expr_Unary2.type != Expr_Term.type:
+        operand2 = newTemp(Expr_Term.type)
+        gen(operand2, '=', Expr_Term.type, Expr_Unary2.addr)
+    gen(Expr_Term.addr, '=', operand1, '*', operand2)}
+
+Expr_Term -> Expr_Term1 / Expr_Unary2
+    {Expr_Term.type = resultAccuracy(Expr_Term1.type, Expr_Unary2.type)
+    Expr_Term.addr = newTemp(Expr_Term.type)
+    operand1 = Expr_Term1.addr
+    if Expr_Term1.type != Expr_Term.type:
+        operand1 = newTemp(Expr_Term.type)
+        gen(operand1, '=', Expr_Term1.type, Expr_Term1.addr)
+    operand2 = Expr_Unary2.addr
+    if Expr_Unary2.type != Expr_Term.type:
+        operand2 = newTemp(Expr_Term.type)
+        gen(operand2, '=', Expr_Term.type, Expr_Unary2.addr)
+    gen(Expr_Term.addr, '=', operand1, '/', operand2)}
+
+Expr_Term -> Expr_Unary1
+    {Expr_Term.addr = Expr_Unary1.addr
+    Expr_Term.type = Expr_Unary1.type}
+
+Expr_Unary -> - Expr_Unary1
+    {Expr_Unary.addr = newTemp(Expr_Unary1.type)
+    Expr_Unary.type = Expr_Unary1.type
+    gen(Expr_Unary.addr, '=', '-', Expr_Unary1.addr)}
+
+Expr_Unary -> + Expr_Unary1
+    {Expr_Unary.addr = newTemp(Expr_Unary1.type)
+    Expr_Unary.type = Expr_Unary1.type
+    gen(Expr_Unary.addr, '=', '+', Expr_Unary1.addr)}
+
+Expr_Unary -> ( Basic ) Expr_Unary1
+    {Expr_Unary.addr = newTemp(Basic.type)
+    Expr_Unary.type = Basic.type
+    gen(Expr_Unary.addr, '=', '(', Basic.type, ")", Expr_Unary1.addr)}
+
+Expr_Unary -> ( Expr1 )
+    {Expr_Unary.addr = Expr1.addr
+    Expr_Unary.type = Expr1.type}
+
+Expr_Unary -> Loc
+    {Expr_Unary.addr = newTemp(Loc.type)
+    Expr_Unary.type = Loc.type
+    gen(Expr_Unary.addr, '=', Loc.array_addr, '[', Loc.offset_addr, ']')}
+
+Expr_Unary -> id
+    {Expr_Unary.addr = top.get_addr(id.lexeme)
+    Expr_Unary.type = top.get_type(id.lexeme)}
+
+Expr_Unary -> num
+    {Expr_Unary.addr = num.lexval
+    Expr_Unary.type = num.lextype}
+
+Loc -> Loc1 [ Expr ]
+    {Loc.array_addr = Loc1.array_addr
+    Loc.type = Loc1.type.elem_type
+    t = newTemp(int)
+    Loc.offset_addr = newTemp(int)
+    gen(t, '=', Expr.addr, '*', Loc.type.width)
+    gen(Loc.offset_addr, '=', Loc.offset_addr, '+', t)}
+
+Loc -> id [ Expr ]
+    {Loc.array_addr = top.get_addr(id.lexeme)
+    Loc.type = top.get_type(id.lexeme).elem_type
+    if Loc.type == None:
+        error(f"{id.lexeme} is not an array")
+        # 错误处理：将其转为可以用的类型
+        Loc.type = top.get_type(id.lexeme)
+    Loc.offset_addr = newTemp(int)
+    gen(Loc.offset_addr, '=', Expr.addr, '*', Loc.type.width)}
+
