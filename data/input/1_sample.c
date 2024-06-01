@@ -16,9 +16,10 @@ int main() {
     var_k = 10;   // [ERROR] undeclared variable
 
     // array
-//    var_i = var_arr[2][1] + 10;
+    var_i = var_arr[2][1] + 10;
     var_arr[1][2] = var_arr[2][1] + 10;
     var_i[1] = 10;  // [ERROR] no-array variable's subscript
+    var_i = var_arr + 10;  // [ERROR] array + int
 
     // if-else
     if (var_j < 100 && var_i < 100)

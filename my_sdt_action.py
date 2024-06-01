@@ -13,7 +13,7 @@ class Top:
         :return: id的地址addr
         """
         if self.id_dict.get(lexeme) is None:
-            _error_list.append('Error: use of undeclared id ' + lexeme)
+            error('use of undeclared id ' + lexeme)
             # 错误处理：未声明的id，默认声明一个类型为int的id
             self.put(lexeme, Symbol.Type.Type_('int'))
             return lexeme
@@ -26,7 +26,7 @@ class Top:
         :return: id的类型type
         """
         if self.id_dict.get(lexeme) is None:
-            _error_list.append('Error: use of undeclared id ' + lexeme)
+            error('use of undeclared id ' + lexeme)
             # 错误处理：未声明的id，默认声明一个类型为int的id
             self.put(lexeme, Symbol.Type.Type_('int'))
             return Symbol.Type.Type_('int')
@@ -34,7 +34,7 @@ class Top:
 
     def put(self, lexeme, type):
         if self.id_dict.get(lexeme) is not None:
-            _error_list.append('Error: ' + lexeme + ' has been redefined')
+            error(lexeme + ' has been redefined')
             # 错误处理：重复声明的id，不再重复声明
             pass
         self.id_dict[lexeme] = (lexeme, type)
@@ -228,6 +228,13 @@ def makelist(instr):
 
 
 def gen(*symbols):
+    # 如果是break和continue生成的goto语句，标记它们的token_place，之后如果未替换，就可以追踪位置
+    if 'break' in _tmp_right or 'continue' in _tmp_right:
+        assert len(symbols) == 1
+        assert "goto_____" in symbols[0]
+        # 把位置放进goto语句里（暂时放置作为标记）
+        symbols = ("goto_____" + str(_tmp_token_place[0][0]) + "_" + str(_tmp_token_place[0][1]),)
+
     global nextinstr
     # 转为字符串
     symbols = [str(symbol) for symbol in symbols]
@@ -253,14 +260,29 @@ def newTemp(type: str | Symbol.Type.Type_) -> str:
         raise TypeError('type must be str or Symbol.Type.Type_')
 
 
-
-# Type.type = array(num.lexval, Type1.type)
 def array(num: int, type: Symbol.Type.Type_) -> Symbol.Type.Array_:
     return Symbol.Type.Array_(num, type, num * type.width)
 
 
+# 传递正在处理的token的位置列表，便于报错
+_tmp_token_place = list()
+# 传递正在处理的产生式右部，便于报错
+_tmp_right = list()
+
+
 def error(msg):
-    _error_list.append('Error: ' + msg)
+    # 数组头的四则运算
+    if len(_tmp_token_place) == 3 and "Expr" in _tmp_right[0] and "Expr" in _tmp_right[2]:
+        error_token_index = 1
+        error_token_place = _tmp_token_place[error_token_index]
+        _error_list.append(f'Line {error_token_place[0]}, Column {error_token_place[1]}, Error: {msg}')
+    # id相关错误，未定义、重复定义、非数组下标访问
+    elif "id" in _tmp_right and _tmp_right != ["Basic", "id", "(", ")", "Block"]:
+        error_token_index = _tmp_right.index("id")
+        error_token_place = _tmp_token_place[error_token_index]
+        _error_list.append(f'Line {error_token_place[0]}, Column {error_token_place[1]}, Error: {msg}')
+    else:
+        _error_list.append(f'Error: {msg}')
 
 
 def resultAccuracy(type1: Symbol.Type.Type_, type2: Symbol.Type.Type_) -> Symbol.Type.Type_:

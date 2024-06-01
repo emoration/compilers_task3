@@ -1,25 +1,6 @@
-[ERROR] Error: var_i has been redefined
-[ERROR] Error: use of undeclared id var_k
-[ERROR] Error: var_i is not an array
-[ERROR] Error: break statement not in loop
-[ERROR] Error: continue statement not in loop
-Error: var_i has been redefined
-Error: use of undeclared id var_k
-Error: var_i is not an array
-Error: break statement not in loop
-Error: continue statement not in loop
-Error: var_i has been redefined
-Error: use of undeclared id var_k
-Error: var_i is not an array
-Error: break statement not in loop
-Error: continue statement not in loop
-Error: var_i has been redefined
-Error: use of undeclared id var_k
-Error: var_i is not an array
-Error: break statement not in loop
-Error: continue statement not in loop
-Error: var_i has been redefined
-Error: use of undeclared id var_k
-Error: var_i is not an array
-Error: break statement not in loop
-Error: continue statement not in loop
+Line 9, Column 9, Error: var_i has been redefined
+Line 16, Column 5, Error: use of undeclared id var_k
+Line 21, Column 5, Error: var_i is not an array
+Line 22, Column 21, Error: array type cannot be operated
+Line 56, Column 5, Error: break statement not in loop
+Line 57, Column 5, Error: continue statement not in loop

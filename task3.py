@@ -675,9 +675,11 @@ def SLR_parsing(_tokens: list[Token], _token_place: list[tuple[int, int]],
     _stack = [0]  # 状态栈
     _symbols = ['$']  # 符号栈
     _symbols_value = [None]  # 符号栈的值
+    _symbols_place = [None]  # 符号栈中每个符号的起始位置（用于报错）
     _input = _tokens  # 待处理的输入符号
     _next_action = ''  # 下一步动作
     _input_index = 0  # _input到了_tokens的第几个
+    grammatical_mistake = False  # 是否有语法错误
     # 开始推导
     while True:
         # 获取当前状态
@@ -708,6 +710,8 @@ def SLR_parsing(_tokens: list[Token], _token_place: list[tuple[int, int]],
             # 五、放入一个(closed_/open_)statement/.../program，就完成了错误序列的替换，然后执行对应的goto操作
             # 六、完成错误处理，执行continue
             pass
+            grammatical_mistake = True
+            _error_list.append("语法错误")
             # 一、记录错误的行列号和错误的token，注意防止重复记录
             if len(_SLR_parsing_error) == 0 or _SLR_parsing_error[-1] != \
                     [_token_place[_input_index][0], _token_place[_input_index][1], now_input_token.value]:
@@ -803,27 +807,62 @@ def SLR_parsing(_tokens: list[Token], _token_place: list[tuple[int, int]],
             _stack.append(int(_next_action[1:]))
             _symbols.append(now_input_value)
             _symbols_value.append(get_lex_value(now_input_token))
+            _symbols_place.append(_token_place[_input_index])
             _input = _input[1:]
             _input_index += 1
         elif 'r' in _next_action and _next_action[1:].isnumeric():
             reduce_index = int(_next_action[1:])
             reduce_production = _augmented_grammar_order_list[reduce_index]
             left_symbol, right_symbol_list = reduce_production
+            my_sdt_action._tmp_right = right_symbol_list
+            my_sdt_action._tmp_token_place = []
             popped_symbols_value = []
             for _ in range(len(right_symbol_list)):
                 _stack.pop()
                 _symbols.pop()  # 这个值也是符号值的栈它应该有的类型
+                my_sdt_action._tmp_token_place.append(_symbols_place.pop())
                 popped_symbols_value.append(_symbols_value.pop())
+            my_sdt_action._tmp_token_place.reverse()  # 出栈的顺序是反过来的，所以要反转
             popped_symbols_value.reverse()  # 出栈的顺序是反过来的，所以要反转
-            left_symbol_value = get_reduce_value(left_symbol, right_symbol_list, popped_symbols_value,
-                                                 nonterminal_symbol_list)
+            if not grammatical_mistake:
+                left_symbol_value = get_reduce_value(left_symbol, right_symbol_list, popped_symbols_value,
+                                                     nonterminal_symbol_list)
+            else:
+                left_symbol_value = None
             _symbols.append(left_symbol)
             _symbols_value.append(left_symbol_value)
+            _symbols_place.append(  # None也没关系，因为空产生式不可能报错
+                my_sdt_action._tmp_token_place[0] if len(my_sdt_action._tmp_token_place) > 0 else None)
             now_state = _stack[-1]
             _stack.append(int(_goto[now_state][left_symbol]))
         else:
             raise Exception(f"未知的action表动作(似乎没有在上面处理掉): {_next_action}")
 
+    # 处理break和continue不在loop中的错误的错误位置标记，已经在三地址码中标记了它们的位置，提取出来对号入座即可
+    _error_goto_in__result_code = list(filter(lambda code_line: "goto_____" in code_line, my_sdt_action._result_code))
+    _error_break_or_continue_in__error_list = list(filter(
+        lambda _error_line: _error_line in \
+                            ["Error: break statement not in loop", "Error: continue statement not in loop"],
+        my_sdt_action._error_list))
+    assert len(_error_goto_in__result_code) == len(_error_break_or_continue_in__error_list), "break和continue的错误位置标记不对应"
+    _error_break_or_continue_indexes = []
+    for _error_goto, _error_b_or_c in zip(_error_goto_in__result_code, _error_break_or_continue_in__error_list):
+        _error_goto_place_info = _error_goto.split("goto_____")[1].split("_")
+        assert len(_error_goto_place_info) == 2, "错误的goto位置标记"
+        _error_goto_place = (int(_error_goto_place_info[0]), int(_error_goto_place_info[1]))
+        _error_break_or_continue_indexes.append(_error_goto_place)
+    # 在错误中对号入座，添加上位置信息作为前缀（Line xxx, Column xxx, ）
+    for i in range(len(my_sdt_action._error_list)):
+        if my_sdt_action._error_list[i] in \
+                ["Error: break statement not in loop", "Error: continue statement not in loop"]:
+            _error_break_or_continue_index = _error_break_or_continue_indexes.pop(0)
+            my_sdt_action._error_list[i] = \
+                f"Line {_error_break_or_continue_index[0]}, Column {_error_break_or_continue_index[1]}, " + \
+                my_sdt_action._error_list[i]
+    # 完事后在my_sdt_action._result_code中删除标记信息
+    for i in range(len(my_sdt_action._result_code)):
+        if "goto_____" in my_sdt_action._result_code[i]:
+            my_sdt_action._result_code[i] = "goto_____  // 错误的break或continue位置标记"
     return _SLR_parsing_procedure, _SLR_parsing_error
 
 
@@ -983,7 +1022,6 @@ def get_reduce_value(_left_symbol: str,
                                                  'id'] + _nonterminal_symbol_list), "两种判断方式不同, 可能是符号栈中的非终结符的值没有正确赋值"
             if _popped_symbols_value[i] is not None:
                 local_context[_right_symbol_list.rights[i]] = _popped_symbols_value[i]  # 注意这里要用.rights[i]，而不是[i]
-
         # 看看需不需要引入my_sdt的内部变量
         inner_variable = [
             'nextinstr', 'top', '_error_list',
@@ -1066,6 +1104,9 @@ if __name__ == '__main__':
         # 刷新输出文件('w'模式会清空文件)
         print_redirect_builder(output_SLR_parsing_table_filepath, use_cache=False)("", end="", mode='w')
         print_redirect_builder(output_SLR_parsing_error_filepath, use_cache=False)("", end="", mode='w')
+        print_redirect_builder(output_SDT_file, use_cache=False)("", end="", mode='w')
+        print_redirect_builder(output_SDT_result_3code_filepath, use_cache=False)("", end="", mode='w')
+        print_redirect_builder(output_SDT_result_error_filepath, use_cache=False)("", end="", mode='w')
 
         # 导入词法分析器
         from task1_package import Token, get_token

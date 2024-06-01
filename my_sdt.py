@@ -369,8 +369,8 @@ sdt_grammar = {
             """
             Bool_Unary.truelist = makelist(nextinstr)
             Bool_Unary.falselist = makelist(nextinstr+1)
-            gen('if', Expr1.addr, Rel.op, Expr2.addr, 'goto  ___')
-            gen('goto _____')
+            gen('if', Expr1.addr, Rel.op, Expr2.addr, 'goto_____')
+            gen('goto_____')
             """
         ),
         SDT_right(

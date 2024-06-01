@@ -134,16 +134,16 @@ Expr -> Expr_Assign ，
 
 I25:
 Expr_Arith -> Expr_Term ， 
-Expr_Term -> Expr_Term ， * Expr_Unary 
-Expr_Term -> Expr_Term ， / Expr_Unary
+Expr_Term -> Expr_Term ， / Expr_Unary 
+Expr_Term -> Expr_Term ， * Expr_Unary
 
 I26:
 Expr_Term -> Expr_Unary ，
 
 I27:
 Loc -> Loc ， [ Expr ] 
-Expr_Unary -> Loc ， 
-Expr_Assign -> Loc ， = Expr
+Expr_Assign -> Loc ， = Expr 
+Expr_Unary -> Loc ，
 
 I28:
 Stmts -> Stmts M Stmt ，
@@ -155,8 +155,8 @@ I30:
 Stmt -> Stmt_Open ，
 
 I31:
-Expr_Unary -> ( ， Expr ) 
 Expr_Unary -> ( ， Basic ) Expr_Unary 
+Expr_Unary -> ( ， Expr ) 
 Basic -> ， float 
 Basic -> ， int 
 Basic -> ， long 
@@ -221,12 +221,12 @@ Stmt_Closed -> for ， ( Expr ; M Bool ; M Expr N ) M Stmt_Closed
 
 I38:
 Loc -> id ， [ Expr ] 
-Expr_Assign -> id ， = Expr 
-Expr_Unary -> id ，
+Expr_Unary -> id ， 
+Expr_Assign -> id ， = Expr
 
 I39:
-Stmt_Open -> if ， ( Bool ) M Stmt 
 Stmt_Closed -> if ， ( Bool ) M Stmt_Closed N else M Stmt_Closed 
+Stmt_Open -> if ， ( Bool ) M Stmt 
 Stmt_Open -> if ， ( Bool ) M Stmt_Closed N else M Stmt_Open
 
 I40:
@@ -354,8 +354,8 @@ I53:
 Expr_Unary -> + Expr_Unary ，
 
 I54:
-Expr_Unary -> Loc ， 
-Loc -> Loc ， [ Expr ]
+Loc -> Loc ， [ Expr ] 
+Expr_Unary -> Loc ，
 
 I55:
 Loc -> id ， [ Expr ] 
@@ -475,9 +475,9 @@ Expr_Unary -> ， id
 Expr_Unary -> ， num
 
 I63:
-Stmt_Open -> if ( ， Bool ) M Stmt 
-Stmt_Closed -> if ( ， Bool ) M Stmt_Closed N else M Stmt_Closed 
 Stmt_Open -> if ( ， Bool ) M Stmt_Closed N else M Stmt_Open 
+Stmt_Closed -> if ( ， Bool ) M Stmt_Closed N else M Stmt_Closed 
+Stmt_Open -> if ( ， Bool ) M Stmt 
 Bool -> ， Bool || L Bool_Join 
 Bool -> ， Bool_Join 
 Bool_Join -> ， Bool_Join && K Bool_Unary 
@@ -515,14 +515,14 @@ I65:
 Type -> Type [ num ] ，
 
 I66:
-Expr_Term -> Expr_Term ， * Expr_Unary 
+Expr_Arith -> Expr_Arith + Expr_Term ， 
 Expr_Term -> Expr_Term ， / Expr_Unary 
-Expr_Arith -> Expr_Arith + Expr_Term ，
+Expr_Term -> Expr_Term ， * Expr_Unary
 
 I67:
-Expr_Term -> Expr_Term ， * Expr_Unary 
+Expr_Arith -> Expr_Arith - Expr_Term ， 
 Expr_Term -> Expr_Term ， / Expr_Unary 
-Expr_Arith -> Expr_Arith - Expr_Term ，
+Expr_Term -> Expr_Term ， * Expr_Unary
 
 I68:
 Expr_Term -> Expr_Term * Expr_Unary ，
@@ -555,8 +555,8 @@ I74:
 Stmt_Closed -> do M Stmt ， while M ( Bool ) ;
 
 I75:
-Stmt_Open -> for ( Expr ， ; M Bool ; M Expr N ) M Stmt_Open 
-Stmt_Closed -> for ( Expr ， ; M Bool ; M Expr N ) M Stmt_Closed
+Stmt_Closed -> for ( Expr ， ; M Bool ; M Expr N ) M Stmt_Closed 
+Stmt_Open -> for ( Expr ， ; M Bool ; M Expr N ) M Stmt_Open
 
 I76:
 Expr_Assign -> id = Expr ，
@@ -565,10 +565,10 @@ I77:
 Loc -> id [ Expr ， ]
 
 I78:
-Stmt_Open -> if ( Bool ， ) M Stmt_Closed N else M Stmt_Open 
-Stmt_Closed -> if ( Bool ， ) M Stmt_Closed N else M Stmt_Closed 
+Bool -> Bool ， || L Bool_Join 
 Stmt_Open -> if ( Bool ， ) M Stmt 
-Bool -> Bool ， || L Bool_Join
+Stmt_Open -> if ( Bool ， ) M Stmt_Closed N else M Stmt_Open 
+Stmt_Closed -> if ( Bool ， ) M Stmt_Closed N else M Stmt_Closed
 
 I79:
 Bool -> Bool_Join ， 
@@ -614,9 +614,9 @@ Expr_Unary -> ， id
 Expr_Unary -> ， num
 
 I83:
-Bool_Unary -> ( ， Bool ) 
 Expr_Unary -> ( ， Expr ) 
 Expr_Unary -> ( ， Basic ) Expr_Unary 
+Bool_Unary -> ( ， Bool ) 
 Bool -> ， Bool || L Bool_Join 
 Bool -> ， Bool_Join 
 Basic -> ， float 
@@ -707,8 +707,8 @@ I91:
 Loc -> id [ Expr ] ，
 
 I92:
-Stmt_Closed -> if ( Bool ) ， M Stmt_Closed N else M Stmt_Closed 
 Stmt_Open -> if ( Bool ) ， M Stmt_Closed N else M Stmt_Open 
+Stmt_Closed -> if ( Bool ) ， M Stmt_Closed N else M Stmt_Closed 
 Stmt_Open -> if ( Bool ) ， M Stmt 
 M -> ，
 
@@ -764,8 +764,8 @@ I102:
 Bool_Unary -> ! Bool_Unary ，
 
 I103:
-Bool -> Bool ， || L Bool_Join 
-Bool_Unary -> ( Bool ， )
+Bool_Unary -> ( Bool ， ) 
+Bool -> Bool ， || L Bool_Join
 
 I104:
 Expr_Unary -> ( Expr ， ) 
@@ -778,16 +778,16 @@ Rel -> ， <=
 Rel -> ， >=
 
 I105:
-Stmt_Open -> while M ( Bool ， ) M Stmt_Open 
+Bool -> Bool ， || L Bool_Join 
 Stmt_Closed -> while M ( Bool ， ) M Stmt_Closed 
-Bool -> Bool ， || L Bool_Join
+Stmt_Open -> while M ( Bool ， ) M Stmt_Open
 
 I106:
 Stmt_Closed -> do M Stmt while M ， ( Bool ) ;
 
 I107:
-Stmt_Closed -> for ( Expr ; M ， Bool ; M Expr N ) M Stmt_Closed 
 Stmt_Open -> for ( Expr ; M ， Bool ; M Expr N ) M Stmt_Open 
+Stmt_Closed -> for ( Expr ; M ， Bool ; M Expr N ) M Stmt_Closed 
 Bool -> ， Bool || L Bool_Join 
 Bool -> ， Bool_Join 
 Bool_Join -> ， Bool_Join && K Bool_Unary 
@@ -955,16 +955,16 @@ Expr_Unary -> ， id
 Expr_Unary -> ， num
 
 I115:
-Stmt_Open -> for ( Expr ; M Bool ， ; M Expr N ) M Stmt_Open 
+Stmt_Closed -> for ( Expr ; M Bool ， ; M Expr N ) M Stmt_Closed 
 Bool -> Bool ， || L Bool_Join 
-Stmt_Closed -> for ( Expr ; M Bool ， ; M Expr N ) M Stmt_Closed
+Stmt_Open -> for ( Expr ; M Bool ， ; M Expr N ) M Stmt_Open
 
 I116:
 Stmt_Open -> if ( Bool ) M Stmt ，
 
 I117:
-Stmt_Closed -> if ( Bool ) M Stmt_Closed ， N else M Stmt_Closed 
 Stmt_Open -> if ( Bool ) M Stmt_Closed ， N else M Stmt_Open 
+Stmt_Closed -> if ( Bool ) M Stmt_Closed ， N else M Stmt_Closed 
 Stmt -> Stmt_Closed ， 
 N -> ，
 
@@ -1012,17 +1012,17 @@ Expr_Unary -> ， id
 Expr_Unary -> ， num
 
 I121:
-Stmt_Closed -> do M Stmt while M ( Bool ， ) ; 
-Bool -> Bool ， || L Bool_Join
+Bool -> Bool ， || L Bool_Join 
+Stmt_Closed -> do M Stmt while M ( Bool ， ) ;
 
 I122:
-Stmt_Closed -> for ( Expr ; M Bool ; ， M Expr N ) M Stmt_Closed 
 Stmt_Open -> for ( Expr ; M Bool ; ， M Expr N ) M Stmt_Open 
+Stmt_Closed -> for ( Expr ; M Bool ; ， M Expr N ) M Stmt_Closed 
 M -> ，
 
 I123:
-Stmt_Closed -> if ( Bool ) M Stmt_Closed N ， else M Stmt_Closed 
-Stmt_Open -> if ( Bool ) M Stmt_Closed N ， else M Stmt_Open
+Stmt_Open -> if ( Bool ) M Stmt_Closed N ， else M Stmt_Open 
+Stmt_Closed -> if ( Bool ) M Stmt_Closed N ， else M Stmt_Closed
 
 I124:
 Stmt_Closed -> while M ( Bool ) M Stmt_Closed ，
@@ -1065,13 +1065,13 @@ I129:
 Stmt_Closed -> do M Stmt while M ( Bool ) ; ，
 
 I130:
-Stmt_Closed -> for ( Expr ; M Bool ; M Expr ， N ) M Stmt_Closed 
 Stmt_Open -> for ( Expr ; M Bool ; M Expr ， N ) M Stmt_Open 
+Stmt_Closed -> for ( Expr ; M Bool ; M Expr ， N ) M Stmt_Closed 
 N -> ，
 
 I131:
-Stmt_Open -> if ( Bool ) M Stmt_Closed N else M ， Stmt_Open 
 Stmt_Closed -> if ( Bool ) M Stmt_Closed N else M ， Stmt_Closed 
+Stmt_Open -> if ( Bool ) M Stmt_Closed N else M ， Stmt_Open 
 Stmt_Open -> ， if ( Bool ) M Stmt 
 Stmt_Open -> ， if ( Bool ) M Stmt_Closed N else M Stmt_Open 
 Stmt_Open -> ， while M ( Bool ) M Stmt_Open 
@@ -1106,8 +1106,8 @@ Expr_Unary -> ， id
 Expr_Unary -> ， num
 
 I132:
-Stmt_Closed -> for ( Expr ; M Bool ; M Expr N ， ) M Stmt_Closed 
-Stmt_Open -> for ( Expr ; M Bool ; M Expr N ， ) M Stmt_Open
+Stmt_Open -> for ( Expr ; M Bool ; M Expr N ， ) M Stmt_Open 
+Stmt_Closed -> for ( Expr ; M Bool ; M Expr N ， ) M Stmt_Closed
 
 I133:
 Stmt_Closed -> if ( Bool ) M Stmt_Closed N else M Stmt_Closed ，
